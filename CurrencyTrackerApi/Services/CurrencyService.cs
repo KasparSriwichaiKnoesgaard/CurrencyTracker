@@ -18,7 +18,7 @@ namespace CurrencyTrackerApi.Services
             // Endpoint https://www.nationalbanken.dk/api/currencyratesxml?lang=da
 
             // return a dummy data
-            return new CurrencyData { ExchangeRate = 686.73, CurrencyCode = "USD" };
+            //return new CurrencyData("USD", 686.73);
         }
     }
 
@@ -27,5 +27,12 @@ namespace CurrencyTrackerApi.Services
         // TODO: Handle non-nullable CurrencyCode
         public string CurrencyCode { get; set; }
         public double ExchangeRate { get; set; }
+
+        public CurrencyData(string currencyCode, double exchangeRate)
+        {
+            CurrencyCode = currencyCode;
+            ExchangeRate = exchangeRate;
+        }
+
     }
 }
