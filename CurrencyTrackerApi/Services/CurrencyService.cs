@@ -6,17 +6,17 @@ namespace CurrencyTrackerApi.Services
     public class CurrencyService
     {
         private readonly HttpClient _httpClient;
+        private readonly string _currencyRatesEndpoint;
 
-        public CurrencyService(HttpClient httpClient)
+        public CurrencyService(HttpClient httpClient, IConfiguration configuration)
         {
-            _httpClient = new HttpClient { BaseAddress = new Uri("https://www.nationalbanken.dk/api/") };
+            _httpClient = httpClient;
+            _currencyRatesEndpoint = configuration["ApiSettings:CurrencyRatesEndpoint"]!;
         }
 
         public async Task<CurrencyData> GetCurrencyData()
         {
-            // TODO: Implement logic to fetch currency data from the endpoint
-            // Endpoint https://www.nationalbanken.dk/api/currencyratesxml?lang=da
-            var response = await _httpClient.GetAsync("currencyratesxml?lang=da");
+            var response = await _httpClient.GetAsync(_currencyRatesEndpoint);
 
             if (response.IsSuccessStatusCode)
             {

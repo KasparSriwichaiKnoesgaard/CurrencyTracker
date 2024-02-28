@@ -3,8 +3,7 @@ using CurrencyTrackerApi.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddHttpClient<CurrencyService>();
-builder.Services.AddScoped<CurrencyService>();
+builder.Services.AddHttpClient<CurrencyService>(client => client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUri"]!));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
