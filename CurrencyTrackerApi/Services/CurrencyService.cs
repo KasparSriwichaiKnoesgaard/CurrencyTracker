@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace CurrencyTrackerApi.Services
 {
@@ -14,6 +15,7 @@ namespace CurrencyTrackerApi.Services
             _currencyRatesEndpoint = configuration["ApiSettings:CurrencyRatesEndpoint"]!;
         }
 
+        // TODO: Change to getAll
         public async Task<CurrencyData> GetCurrencyData()
         {
             var response = await _httpClient.GetAsync(_currencyRatesEndpoint);
@@ -36,6 +38,38 @@ namespace CurrencyTrackerApi.Services
 
             // return a dummy data
             //return new CurrencyData("USD", 686.73);
+        }
+
+        public async Task<CurrencyData> GetCurrencyData(string currencyCode)
+        {
+            var response = await _httpClient.GetAsync(_currencyRatesEndpoint);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var xmlData = await response.Content.ReadAsStringAsync();
+                return GetCurrencyByCode(xmlData, currencyCode);
+            }
+            else
+            {
+                throw new HttpRequestException($"Error: {response.StatusCode} - {response.ReasonPhrase}");
+            }
+        }
+
+        private CurrencyData GetCurrencyByCode(string xmlData, string currencyCode)
+        {
+            XDocument xdoc = XDocument.Parse(xmlData);
+            var currencyElement = xdoc.Descendants("currency")
+                                      .FirstOrDefault(currency => (string)currency.Attribute("code") == currencyCode);
+
+            if (currencyElement != null)
+            {
+                var rate = double.Parse(currencyElement.Attribute("rate").Value);
+                return new CurrencyData(currencyCode, rate);
+            }
+            else
+            {
+                throw new InvalidOperationException($"Currency code '{currencyCode}' not found.");
+            }
         }
     }
 
