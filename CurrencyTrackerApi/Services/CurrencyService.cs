@@ -18,41 +18,35 @@ namespace CurrencyTrackerApi.Services
         // TODO: Change to getAll
         public async Task<CurrencyData> GetCurrencyData()
         {
-            var response = await _httpClient.GetAsync(_currencyRatesEndpoint);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var xmlString = await response.Content.ReadAsStringAsync();
-
-                // TODO: Parse XML
-                //CurrencyData currencyData = ParseXmlData(xmlString);
-                CurrencyData currencyData = new(xmlString, 686.73);
-
-                return currencyData;
-            }
-            else
-            {
-                // Handle error
-                throw new HttpRequestException($"Error: {response.StatusCode} - {response.ReasonPhrase}");
-            }
-
-            // return a dummy data
-            //return new CurrencyData("USD", 686.73);
+            var xmlData = await FetchCurrencyData();
+            return GetAllCurrencies(xmlData);
         }
 
         public async Task<CurrencyData> GetCurrencyData(string currencyCode)
+        {
+            var xmlData = await FetchCurrencyData();
+            return GetCurrencyByCode(xmlData, currencyCode);
+        }
+
+        private async Task<string> FetchCurrencyData()
         {
             var response = await _httpClient.GetAsync(_currencyRatesEndpoint);
 
             if (response.IsSuccessStatusCode)
             {
-                var xmlData = await response.Content.ReadAsStringAsync();
-                return GetCurrencyByCode(xmlData, currencyCode);
+                return await response.Content.ReadAsStringAsync();
             }
             else
             {
                 throw new HttpRequestException($"Error: {response.StatusCode} - {response.ReasonPhrase}");
             }
+        }
+
+        private CurrencyData GetAllCurrencies(string xmlData)
+        {
+            // TODO: Implement XML parsing logic here
+            // This is a placeholder
+            return new CurrencyData(xmlData, 686.73);
         }
 
         private CurrencyData GetCurrencyByCode(string xmlData, string currencyCode)
