@@ -17,11 +17,10 @@ public class CurrencyController : ControllerBase
         _currencyService = currencyService;
     }
 
-    // TODO: Change to getAll
     [HttpGet("exchange-rate")]
     public async Task<IActionResult> GetExchangeRate()
     {
-        var currencyData = await _currencyService.GetCurrencyData();
+        var currencyData = await _currencyService.GetAllCurrencies();
         return Ok(currencyData);
     }
 
@@ -30,7 +29,7 @@ public class CurrencyController : ControllerBase
     {
         try
         {
-            var currencyData = await _currencyService.GetCurrencyData(currencyCode);
+            var currencyData = await _currencyService.GetCurrencyByCode(currencyCode);
             return Ok(currencyData);
         }
         catch (Exception ex)

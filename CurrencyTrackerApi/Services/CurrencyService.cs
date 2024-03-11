@@ -16,14 +16,13 @@ namespace CurrencyTrackerApi.Services
             _currencyRatesEndpoint = configuration["ApiSettings:CurrencyRatesEndpoint"]!;
         }
 
-        // TODO: Change to getAll
-        public async Task<CurrencyData> GetCurrencyData()
+        public async Task<List<CurrencyData>> GetAllCurrencies()
         {
             var xmlData = await FetchCurrencyData();
-            return GetAllCurrencies(xmlData).FirstOrDefault(); //remove after change to getAll
+            return GetAllCurrencies(xmlData);
         }
 
-        public async Task<CurrencyData> GetCurrencyData(string currencyCode)
+        public async Task<CurrencyData> GetCurrencyByCode(string currencyCode)
         {
             var xmlData = await FetchCurrencyData();
             return GetCurrencyByCode(xmlData, currencyCode);
