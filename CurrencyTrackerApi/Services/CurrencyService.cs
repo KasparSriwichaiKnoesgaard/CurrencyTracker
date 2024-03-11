@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Globalization;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
@@ -57,7 +58,7 @@ namespace CurrencyTrackerApi.Services
 
             if (currencyElement != null)
             {
-                var rate = double.Parse(currencyElement.Attribute("rate").Value);
+                var rate = double.Parse(currencyElement.Attribute("rate").Value, CultureInfo.InvariantCulture);
                 return new CurrencyData(currencyCode, rate);
             }
             else
