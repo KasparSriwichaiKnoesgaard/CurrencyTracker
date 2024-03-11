@@ -29,7 +29,8 @@ public class CurrencyController : ControllerBase
     {
         try
         {
-            var currencyData = await _currencyService.GetCurrencyByCode(currencyCode);
+            string upperCaseCurrencyCode = currencyCode.ToUpper();
+            var currencyData = await _currencyService.GetCurrencyByCode(upperCaseCurrencyCode);
             return Ok(currencyData);
         }
         catch (Exception ex)
