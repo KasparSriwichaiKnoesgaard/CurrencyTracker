@@ -20,7 +20,7 @@ namespace CurrencyTrackerApi.Services
         public async Task<CurrencyData> GetCurrencyData()
         {
             var xmlData = await FetchCurrencyData();
-            return GetAllCurrencies(xmlData);
+            return GetAllCurrencies(xmlData).FirstOrDefault(); //remove after change to getAll
         }
 
         public async Task<CurrencyData> GetCurrencyData(string currencyCode)
@@ -43,28 +43,28 @@ namespace CurrencyTrackerApi.Services
             }
         }
 
-        private CurrencyData GetAllCurrencies(string xmlData)
+        private List<CurrencyData> GetAllCurrencies(string xmlData)
         {
-            // TODO: Implement XML parsing logic here
-            // This is a placeholder
-            return new CurrencyData(xmlData, 686.73);
+            XDocument xdoc = XDocument.Parse(xmlData);
+            var currencyElements = xdoc.Descendants("currency");
+
+            List<CurrencyData> currencyList = currencyElements.Select(currency => new CurrencyData(
+                (string)currency.Attribute("code"),
+                double.Parse(currency.Attribute("rate").Value, CultureInfo.InvariantCulture))).ToList();
+            return currencyList;
         }
 
         private CurrencyData GetCurrencyByCode(string xmlData, string currencyCode)
         {
-            XDocument xdoc = XDocument.Parse(xmlData);
-            var currencyElement = xdoc.Descendants("currency")
-                                      .FirstOrDefault(currency => (string)currency.Attribute("code") == currencyCode);
+            var allCurrencies = GetAllCurrencies(xmlData);
+            var currency = allCurrencies.FirstOrDefault(c => c.CurrencyCode == currencyCode);
 
-            if (currencyElement != null)
-            {
-                var rate = double.Parse(currencyElement.Attribute("rate").Value, CultureInfo.InvariantCulture);
-                return new CurrencyData(currencyCode, rate);
-            }
-            else
+            if (currency == null)
             {
                 throw new InvalidOperationException($"Currency code '{currencyCode}' not found.");
             }
+
+            return currency;
         }
     }
 
